@@ -1,4 +1,7 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿#if WINDOWS
+
+using Microsoft.Web.WebView2.Core;
+#endif
 using System.Diagnostics;
 using System.Text;
 using WeatherTwentyOne.Services;
@@ -38,9 +41,10 @@ public partial class MainPage : ContentPage
 
 	void ModifyWebView()
 	{
+#if WINDOWS
 		Microsoft.Maui.Handlers.WebViewHandler.Mapper.AppendToMapping("MyCustomization", (handler, view) =>
 		{
-			#if WINDOWS
+
 			var webView = handler.PlatformView; // Get the native android webview.
 			CoreWebView2EnvironmentOptions Options = new CoreWebView2EnvironmentOptions();
 			Options.AdditionalBrowserArguments = "--proxy-server=http://127.0.0.1:1080";
@@ -52,7 +56,7 @@ public partial class MainPage : ContentPage
 			//webView.CoreWebView2.AddWebResourceRequestedFilter(filter,
 			//	CoreWebView2WebResourceContext.All);
 			//webView.CoreWebView2.WebResourceRequested += CoreWebView2_WebResourceRequested;
-#endif
+
 
 		});
 
@@ -85,6 +89,8 @@ public partial class MainPage : ContentPage
 			// for demo write out captured string vals
 			Debug.WriteLine($"{url}\n{sb.ToString()}\n{postData}\n---");
 		}
+#endif
 	}
+
 }
 
