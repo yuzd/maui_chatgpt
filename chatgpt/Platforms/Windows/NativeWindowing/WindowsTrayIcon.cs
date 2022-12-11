@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,11 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 	{
         private readonly object lockObject = new object();
 
-
+		/// <summary>
+		/// 获取或设置与 NotifyIcon 关联的快捷菜单。
+		/// </summary>
+		public ContextMenuStrip ContextMenuStrip { get; }
+		
         private NotifyIconData iconData;
 
         /// <summary>
@@ -25,9 +30,11 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 
         public bool IsTaskbarIconCreated { get; private set; }
 
-        public WindowsTrayIcon(string iconFile)
+        public WindowsTrayIcon(Icon iconFile)
 		{
-            messageSink = new WindowMessageSink();
+			ContextMenuStrip = new();
+
+			messageSink = new WindowMessageSink(this);
 
             // init icon data structure
             iconData = NotifyIconData.CreateDefault(messageSink.MessageWindowHandle, iconFile);
@@ -45,6 +52,14 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 			messageSink.TaskbarCreated += MessageSink_TaskbarCreated;
             //messageSink.ChangeToolTipStateRequest += OnToolTipChange;
         }
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="menuItem"></param>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		public  void OnContextMenuItemClick(ContextMenuStrip.MenuItem menuItem, object? sender, EventArgs e) => menuItem.OnClick(sender, e);
 
 		private void MessageSink_TaskbarCreated()
 		{
@@ -94,6 +109,11 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
                 IsTaskbarIconCreated = true;
             }
         }
+
+        public void dispose()
+        {
+			WriteIconData(ref iconData, NotifyCommand.Delete);
+		}
 
         private void RemoveTaskbarIcon()
         {

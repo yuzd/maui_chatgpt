@@ -3,5 +3,5 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="chatgpt.MainPage">
 
-    <WebView x:Name="MyWebView" Source="https://chat.openai.com/chat" />
+    <WebView x:Name="MyWebView" Source="https://www.baidu.com" />
 </ContentPage>

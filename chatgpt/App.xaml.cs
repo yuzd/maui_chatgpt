@@ -1,6 +1,7 @@
-﻿namespace chatgpt;
+﻿
+namespace chatgpt;
 
-public partial class App : Application
+public partial class App : Microsoft.Maui.Controls.Application
 {
 	public App()
 	{
@@ -9,18 +10,18 @@ public partial class App : Application
 		MainPage = new AppShell();
 	}
 
-	protected override Window CreateWindow(IActivationState activationState)
-	{
-		var window = base.CreateWindow(activationState);
+	//protected override Window CreateWindow(IActivationState activationState)
+	//{
+	//	var window = base.CreateWindow(activationState);
 
-		const int newWidth = 800;
-		const int newHeight = 600;
+	//	const int newWidth = 800;
+	//	const int newHeight = 600;
 
-		window.Width = newWidth;
-		window.Height = newHeight;
+	//	window.Width = newWidth;
+	//	window.Height = newHeight;
 		
 
 
-		return window;
-	}
+	//	return window;
+	//}
 }

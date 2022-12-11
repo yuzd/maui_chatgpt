@@ -17,10 +17,45 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         public static extern bool Shell_NotifyIcon(NotifyCommand cmd, [In] ref NotifyIconData data);
 
 
-        /// <summary>
-        /// Creates the helper window that receives messages from the taskar icon.
-        /// </summary>
-        [DllImport(User32, EntryPoint = "CreateWindowExW", SetLastError = true)]
+		[DllImport("user32.dll")]
+		public static extern bool DestroyMenu(IntPtr hmenu);
+	
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr CreatePopupMenu();
+
+
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
+		public static extern bool AppendMenu(IntPtr hMenu, MenuFlags uFlags, uint uIDNewItem, string lpNewItem);
+
+		
+		[Flags]
+		public enum MenuFlags : uint
+		{
+			MF_STRING = 0,
+			MF_BYPOSITION = 0x400,
+			MF_SEPARATOR = 0x800,
+			MF_REMOVE = 0x1000,
+		}
+
+		[Flags]
+		public enum UFLAGS : uint
+		{
+			TPM_LEFTALIGN = 0x0000,
+			TPM_CENTERALIGN = 0x0004,
+			TPM_RIGHTALIGN = 0x0008,
+			TPM_TOPALIGN = 0x0000,
+			TPM_VCENTERALIGN = 0x0010,
+			TPM_BOTTOMALIGN = 0x0020,
+			TPM_HORIZONTAL = 0x0000,
+			TPM_VERTICAL = 0x0040,
+			TPM_NONOTIFY = 0x0080,
+			TPM_RETURNCMD = 0x0100
+		}
+		/// <summary>
+		/// Creates the helper window that receives messages from the taskar icon.
+		/// </summary>
+		[DllImport(User32, EntryPoint = "CreateWindowExW", SetLastError = true)]
         public static extern IntPtr CreateWindowEx(int dwExStyle, [MarshalAs(UnmanagedType.LPWStr)] string lpClassName,
             [MarshalAs(UnmanagedType.LPWStr)] string lpWindowName, int dwStyle, int x, int y,
             int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance,
@@ -85,7 +120,28 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         public static extern bool GetPhysicalCursorPos(ref Point lpPoint);
 
 
-        [DllImport(User32, SetLastError = true)]
-        public static extern bool GetCursorPos(ref Point lpPoint);
-    }
+  
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetCursorPos")]
+		public static extern bool GetCursorPos(out PointInt32 pt);
+
+		[Serializable]
+		[StructLayout(LayoutKind.Sequential)]
+		public struct PointInt32
+		{
+			public int X;
+			public int Y;
+
+			public PointInt32(int x, int y)
+			{
+				X = x;
+				Y = y;
+			}
+		}
+
+		[DllImport("user32.dll")]
+		public static extern uint TrackPopupMenuEx(IntPtr hmenu, UFLAGS uFlags, int x, int y, IntPtr hwnd, IntPtr lptpm);
+
+
+	}
 }

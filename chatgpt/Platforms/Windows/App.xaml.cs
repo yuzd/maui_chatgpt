@@ -2,6 +2,7 @@
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using WinRT.Interop;
+using WeatherTwentyOne.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -39,6 +40,28 @@ public partial class App : MauiWinUIApplication
 		//presenter.IsResizable = false;
 		//presenter.IsMaximizable = false;
 		//presenter.IsMinimizable = false;
+
+		SetupTrayIcon();
 	}
+
+	private void SetupTrayIcon()
+	{
+		var trayService = WeatherTwentyOne.ServiceProvider.GetService<ITrayService>();
+
+		if (trayService != null)
+		{
+			trayService.Initialize();
+			trayService.ExistHandler = () => {
+
+				((MauiWinUIWindow)chatgpt.App.Current.Windows[0].Handler.PlatformView).Close();
+			};
+
+
+			trayService.ClickHandler = () =>
+				WeatherTwentyOne.ServiceProvider.GetService<INotificationService>()
+					?.ShowNotification("Hello Build! 😻 From .NET MAUI", "How's your weather?  It's sunny where we are 🌞");
+		}
+	}
+
 }
 

@@ -29,6 +29,9 @@ public static class MauiProgram
 #endif
 
 #if WINDOWS
+
+
+
 		builder.ConfigureLifecycleEvents(events =>
 		{
 			events.AddWindows(wndLifeCycleBuilder =>
@@ -51,18 +54,16 @@ public static class MauiProgram
 						p.IsResizable = false;
 						p.IsMaximizable = false;
 						p.IsMinimizable = false;
-						p.IsAlwaysOnTop = false;
+						p.IsAlwaysOnTop = true;
 
 						//disable the close button action when clicked - close button still visible, but does not close the app
 						//events.AddWindows(windows => windows
 						//	.OnClosed((window, args) => args.Handled = true));
 					}
-					//else
-					//{
-					//	const int width = 500;
-					//	const int height = 700;
-					//	winuiAppWindow.MoveAndResize(new RectInt32(1920 / 2 - width / 2, 1080 / 2 - height / 2, width, height));
-					//}
+
+					const int width = 500;
+					const int height = 700;
+					winuiAppWindow.MoveAndResize(new RectInt32(1920 / 2 - width / 2, 1080 / 2 - height / 2, width, height));
 				});
 			});
 		});
@@ -77,7 +78,6 @@ public static class MauiProgram
             //services.AddSingleton<INotificationService, MacCatalyst.NotificationService>();
 #endif
 		var app =  builder.Build();
-
 		return app;
 	}
 

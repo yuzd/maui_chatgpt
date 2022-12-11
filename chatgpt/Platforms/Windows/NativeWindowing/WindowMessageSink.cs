@@ -34,13 +34,14 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
     /// </summary>
     public class WindowMessageSink : IDisposable
     {
-        #region members
+		#region members
 
-        /// <summary>
-        /// The ID of messages that are received from the the
-        /// taskbar icon.
-        /// </summary>
-        public const int CallbackMessageId = 0x400;
+		WindowsTrayIcon windowsTrayIcon;
+		/// <summary>
+		/// The ID of messages that are received from the the
+		/// taskbar icon.
+		/// </summary>
+		public const int CallbackMessageId = 0x400;
 
         /// <summary>
         /// The ID of the message that is being received if the
@@ -79,14 +80,16 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         /// </summary>
         public byte Version => 0x4;
 
-        #endregion
 
-        #region events
+		IntPtr popupMenu;
+		#endregion
 
-        /// <summary>
-        /// The custom tooltip should be closed or hidden.
-        /// </summary>
-        public event Action<bool> ChangeToolTipStateRequest;
+		#region events
+
+		/// <summary>
+		/// The custom tooltip should be closed or hidden.
+		/// </summary>
+		public event Action<bool> ChangeToolTipStateRequest;
 
         /// <summary>
         /// Fired in case the user clicked or moved within
@@ -115,26 +118,15 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         /// a given taskbar icon.
         /// </summary>
         /// <param name="version"></param>
-        public WindowMessageSink()
+        public WindowMessageSink(WindowsTrayIcon windowsTrayIcon)
         {
-            CreateMessageWindow();
+            this.windowsTrayIcon = windowsTrayIcon;
+
+			CreateMessageWindow();
         }
 
 
-        /// <summary>
-        /// Creates a dummy instance that provides an empty
-        /// pointer rather than a real window handler.<br/>
-        /// Used at design time.
-        /// </summary>
-        /// <returns>WindowMessageSink</returns>
-        internal static WindowMessageSink CreateEmpty()
-        {
-            return new WindowMessageSink
-            {
-                MessageWindowHandle = IntPtr.Zero
-            };
-        }
-
+       
         #endregion
 
         #region CreateMessageWindow
@@ -183,14 +175,88 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
             }
         }
 
-        #endregion
+		#endregion
 
-        #region Handle Window Messages
+		#region menu
+		
 
-        /// <summary>
-        /// Callback method that receives messages from the taskbar area.
-        /// </summary>
-        private IntPtr OnWindowMessageReceived(IntPtr hWnd, uint messageId, IntPtr wParam, IntPtr lParam)
+		void DestroyMenu()
+		{
+			if (popupMenu != default)
+			{
+				WinApi.DestroyMenu(popupMenu);
+				popupMenu = default;
+			}
+		}
+
+
+		void ShowContextMenu()
+		{
+			DestroyMenu();
+
+			if (!this.windowsTrayIcon.ContextMenuStrip.Items.Any()) return;
+
+			// Since we can't use the Avalonia ContextMenu directly due to shortcomings
+			// regrading its positioning, we'll create a native context menu instead.
+			// This dictionary will map the menu item IDs which we'll need for the native
+			// menu to the MenuItems of the provided Avalonia ContextMenu.
+			Dictionary<uint, Action> contextItemLookup = new();
+
+			// Create a native (Win32) popup menu as the notify icon's context menu.
+			popupMenu =WinApi.CreatePopupMenu();
+
+			uint i = 1;
+			foreach (var item in windowsTrayIcon.ContextMenuStrip.Items)
+			{
+				// Add items to the native context menu by simply reusing
+				// the information provided within the Avalonia ContextMenu.
+				WinApi.AppendMenu(popupMenu, WinApi.MenuFlags.MF_STRING, i, item.Text ?? string.Empty);
+
+				// Add the mapping so that we can find the selected item later
+				contextItemLookup.Add(i,
+					() => windowsTrayIcon.OnContextMenuItemClick(item, this, EventArgs.Empty));
+				i++;
+			}
+
+			// To display a context menu for a notification icon, the current window
+			// must be the foreground window before the application calls TrackPopupMenu
+			// or TrackPopupMenuEx.Otherwise, the menu will not disappear when the user
+			// clicks outside of the menu or the window that created the menu (if it is
+			// visible). If the current window is a child window, you must set the
+			// (top-level) parent window as the foreground window.
+			WeatherTwentyOne.WindowExtensions.BringToFront();
+			// Get the mouse cursor position
+			WinApi.GetCursorPos(out var pt);
+
+
+			// Now display the context menu and block until we get a result
+			uint commandId = WinApi.TrackPopupMenuEx(
+				popupMenu,
+				WinApi.UFLAGS.TPM_BOTTOMALIGN |
+				WinApi.UFLAGS.TPM_RIGHTALIGN |
+				WinApi.UFLAGS.TPM_NONOTIFY |
+				WinApi.UFLAGS.TPM_RETURNCMD,
+				pt.X, pt.Y, WeatherTwentyOne.WindowExtensions.Hwnd, IntPtr.Zero);
+
+
+			// If we have a result, execute the corresponding command
+			if (commandId != 0)
+			{
+				if (contextItemLookup.ContainsKey(commandId))
+				{
+					contextItemLookup[commandId]();
+				}
+			}
+		}
+
+		#endregion
+
+		#region Handle Window Messages
+
+		/// <summary>
+		/// Callback method that receives messages from the taskbar area.
+		/// </summary>
+		private IntPtr OnWindowMessageReceived(IntPtr hWnd, uint messageId, IntPtr wParam, IntPtr lParam)
         {
             if (messageId == taskbarRestartMessageId)
             {
@@ -238,7 +304,8 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
                 case WindowsMessages.WM_CONTEXTMENU:
                     // TODO: Handle WM_CONTEXTMENU, see https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shell_notifyiconw
                     Debug.WriteLine("Unhandled WM_CONTEXTMENU");
-                    break;
+					ShowContextMenu();
+					break;
 
                 case WindowsMessages.WM_MOUSEMOVE:
                     MouseEventReceived?.Invoke(MouseEvent.MouseMove);

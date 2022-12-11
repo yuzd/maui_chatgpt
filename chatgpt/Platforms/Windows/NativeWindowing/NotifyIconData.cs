@@ -1,4 +1,6 @@
-﻿using System;
+﻿using chatgpt;
+using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Hardcodet.Wpf.TaskbarNotification.Interop
@@ -118,13 +120,20 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         public IntPtr CustomBalloonIconHandle;
 
 
-        /// <summary>
-        /// Creates a default data structure that provides
-        /// a hidden taskbar icon without the icon being set.
-        /// </summary>
-        /// <param name="handle"></param>
-        /// <returns>NotifyIconData</returns>
-        public static NotifyIconData CreateDefault(IntPtr handle, string iconFile)
+        //public static IntPtr getICon(string iconFile)
+        //{
+	       // IntPtr hIcon = PInvoke.User32.LoadImage(IntPtr.Zero, iconFile,
+		      //  PInvoke.User32.ImageType.IMAGE_ICON, 16, 16, PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
+	       // return hIcon;
+        //}
+
+		/// <summary>
+		/// Creates a default data structure that provides
+		/// a hidden taskbar icon without the icon being set.
+		/// </summary>
+		/// <param name="handle"></param>
+		/// <returns>NotifyIconData</returns>
+		public static NotifyIconData CreateDefault(IntPtr handle, Icon iconFile)
         {
             var data = new NotifyIconData();
 
@@ -147,11 +156,11 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
             data.TaskbarIconId = 0x0;
             data.CallbackMessageId = WindowMessageSink.CallbackMessageId;
             data.VersionOrTimeout = (uint)0x4;
+			//IntPtr hIcon = Resource.trayicon.Handle;
+                //PInvoke.User32.LoadImage(IntPtr.Zero, iconFile,
+                //PInvoke.User32.ImageType.IMAGE_ICON, 16, 16, PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
 
-            IntPtr hIcon = PInvoke.User32.LoadImage(IntPtr.Zero, iconFile,
-                PInvoke.User32.ImageType.IMAGE_ICON, 16, 16, PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
-
-            data.IconHandle = hIcon;
+            data.IconHandle = iconFile.Handle;
 
             //hide initially
             data.IconState = IconState.Hidden;
