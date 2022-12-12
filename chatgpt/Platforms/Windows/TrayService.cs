@@ -9,11 +9,15 @@ public class TrayService : ITrayService
 {
     WindowsTrayIcon tray;
 
+	volatile bool dispose = false;
+
     public Action ClickHandler { get; set; }
 
 	public Action ExistHandler { get; set; }
-	
-    public void Initialize()
+
+	public bool isDispose => dispose;
+
+	public void Initialize()
     {
         tray = new WindowsTrayIcon(Resource.trayicon);
 
@@ -22,6 +26,7 @@ public class TrayService : ITrayService
             Text = "Exit",
 			Command = new Command(() => {
 				tray.dispose();
+				dispose = true;
 				ExistHandler?.Invoke();
 			})
 		});

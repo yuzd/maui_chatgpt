@@ -192,6 +192,8 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
         /// <summary>
         /// Sent when a cursor no longer hovers over an icon to indicate that the rich pop-up UI should be closed.
         /// </summary>
-        NIN_POPUPCLOSE = WM_USER + 7
+        NIN_POPUPCLOSE = WM_USER + 7,
+
+        WM_ACTIVATEAPP = 0x001C,
     }
 }

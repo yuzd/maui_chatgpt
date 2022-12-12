@@ -224,7 +224,7 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 			// clicks outside of the menu or the window that created the menu (if it is
 			// visible). If the current window is a child window, you must set the
 			// (top-level) parent window as the foreground window.
-			WeatherTwentyOne.WindowExtensions.BringToFront();
+			//WeatherTwentyOne.WindowExtensions.BringToFront();
 			// Get the mouse cursor position
 			WinApi.GetCursorPos(out var pt);
 
@@ -306,7 +306,8 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
                     Debug.WriteLine("Unhandled WM_CONTEXTMENU");
 					ShowContextMenu();
 					break;
-
+                case WindowsMessages.WM_ACTIVATEAPP:
+                    break;
                 case WindowsMessages.WM_MOUSEMOVE:
                     MouseEventReceived?.Invoke(MouseEvent.MouseMove);
                     break;

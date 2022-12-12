@@ -7,4 +7,6 @@ public interface ITrayService
     Action ClickHandler { get; set; }
 
 	Action ExistHandler { get; set; }
+
+    bool isDispose { get;}
 }

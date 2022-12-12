@@ -17,7 +17,9 @@
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.chatgpt</ApplicationId>
 		<ApplicationIdGuid>82c6c62a-b21a-4266-8f4f-fcd4292150e3</ApplicationIdGuid>
-
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained Condition="'$(IsUnpackaged)' == 'true'">true</WindowsAppSDKSelfContained>
+    <SelfContained Condition="'$(IsUnpackaged)' == 'true'">true</SelfContained>
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
@@ -25,6 +27,14 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+		<PackageCertificateThumbprint>77C38ACA3A7299FEA2F78F382AA26E03A997C34E</PackageCertificateThumbprint>
+		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
@@ -64,14 +74,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 	</ItemGroup>
   <ItemGroup>
-    <None Remove="Platforms\Windows\trayicon.ico" />
     <None Remove="Resources\Raw\trayicon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Platforms\Windows\trayicon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 	<ItemGroup>
 	  <MauiXaml Update="Setting.xaml">

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Microsoft.Maui.Platform;
 #if WINDOWS
 using WeatherTwentyOne.Services;
 using WeatherTwentyOne.WinUI;
@@ -46,19 +47,36 @@ public static class MauiProgram
 					//hide the minimize and maximize button in title bar
 					window.ExtendsContentIntoTitleBar = false;
 
-
 					if (winuiAppWindow.Presenter is OverlappedPresenter p)
 					{
 						//p.Maximize();
-						p.IsAlwaysOnTop = true;
+						p.IsAlwaysOnTop = false;
 						p.IsResizable = false;
 						p.IsMaximizable = false;
 						p.IsMinimizable = false;
-						p.IsAlwaysOnTop = true;
+
 
 						//disable the close button action when clicked - close button still visible, but does not close the app
-						//events.AddWindows(windows => windows
-						//	.OnClosed((window, args) => args.Handled = true));
+						events.AddWindows(windows =>
+						{
+
+							windows.OnLaunched((a1, args) =>
+							{
+								//window.GetAppWindow().Hide();
+							});
+
+							windows.OnClosed((window, args) =>
+							{
+								var trayService = WeatherTwentyOne.ServiceProvider.GetService<ITrayService>();
+								if (!trayService.isDispose)
+								{
+									args.Handled = true;
+									window.GetAppWindow().Hide();
+								}
+
+							});
+
+						});
 					}
 
 					const int width = 500;
@@ -77,10 +95,11 @@ public static class MauiProgram
             //services.AddSingleton<ITrayService, MacCatalyst.TrayService>();
             //services.AddSingleton<INotificationService, MacCatalyst.NotificationService>();
 #endif
-		var app =  builder.Build();
+		var app = builder.Build();
 		return app;
 	}
 
 
-	
+
+
 }
