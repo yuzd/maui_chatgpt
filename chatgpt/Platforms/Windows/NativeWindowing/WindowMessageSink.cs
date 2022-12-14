@@ -228,9 +228,10 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 			// Get the mouse cursor position
 			WinApi.GetCursorPos(out var pt);
 
+            PInvoke.User32.SetForegroundWindow(WeatherTwentyOne.WindowExtensions.Hwnd);
 
-			// Now display the context menu and block until we get a result
-			uint commandId = WinApi.TrackPopupMenuEx(
+            // Now display the context menu and block until we get a result
+            uint commandId = WinApi.TrackPopupMenuEx(
 				popupMenu,
 				WinApi.UFLAGS.TPM_BOTTOMALIGN |
 				WinApi.UFLAGS.TPM_RIGHTALIGN |

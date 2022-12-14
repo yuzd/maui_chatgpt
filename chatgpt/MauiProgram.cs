@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Windows.UI.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Maui.Platform;
+using PInvoke;
 #if WINDOWS
 using WeatherTwentyOne.Services;
 using WeatherTwentyOne.WinUI;
@@ -38,32 +40,45 @@ public static class MauiProgram
 			events.AddWindows(wndLifeCycleBuilder =>
 			{
 				wndLifeCycleBuilder.OnWindowCreated(window =>
-				{
-
-					IntPtr nativeWindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                {
+                   
+                    IntPtr nativeWindowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
 					WindowId win32WindowsId = Win32Interop.GetWindowIdFromWindow(nativeWindowHandle);
 					AppWindow winuiAppWindow = AppWindow.GetFromWindowId(win32WindowsId);
+               
 
-					//hide the minimize and maximize button in title bar
-					window.ExtendsContentIntoTitleBar = false;
+                    //hide the minimize and maximize button in title bar
+                    window.ExtendsContentIntoTitleBar = false;
 
 					if (winuiAppWindow.Presenter is OverlappedPresenter p)
 					{
-						//p.Maximize();
-						p.IsAlwaysOnTop = false;
+                        //p.Maximize();
+                        //p.Minimize(false);
+                        p.IsAlwaysOnTop = false;
 						p.IsResizable = false;
 						p.IsMaximizable = false;
 						p.IsMinimizable = false;
+                     
 
+                        //disable the close button action when clicked - close button still visible, but does not close the app
+                        events.AddWindows(windows =>
+                        {
 
-						//disable the close button action when clicked - close button still visible, but does not close the app
-						events.AddWindows(windows =>
-						{
+						
+
+                            window.Activated += (sender, args) =>
+                            {
+                                window.GetAppWindow()?.Hide();
+                            } ;
 
 							windows.OnLaunched((a1, args) =>
 							{
-								//window.GetAppWindow().Hide();
-							});
+
+                                const int width = 700;
+                                const int height = 800;
+                                winuiAppWindow.MoveAndResize(new RectInt32(1920 / 2 - width / 2, 1080 / 2 - height / 2, width, height));
+                                //window.GetAppWindow().Hide();
+                            });
 
 							windows.OnClosed((window, args) =>
 							{
@@ -79,9 +94,7 @@ public static class MauiProgram
 						});
 					}
 
-					const int width = 500;
-					const int height = 700;
-					winuiAppWindow.MoveAndResize(new RectInt32(1920 / 2 - width / 2, 1080 / 2 - height / 2, width, height));
+					winuiAppWindow.MoveAndResize(new RectInt32(0, 0, 0, 0));
 				});
 			});
 		});

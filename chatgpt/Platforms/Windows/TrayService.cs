@@ -32,7 +32,6 @@ public class TrayService : ITrayService
 		});
 
 		tray.LeftClick = () => {
-            WindowExtensions.BringToFront();
             ClickHandler?.Invoke();
         };
     }
