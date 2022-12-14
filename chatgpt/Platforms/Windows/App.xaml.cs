@@ -4,6 +4,8 @@ using Microsoft.UI.Xaml;
 using WinRT.Interop;
 using WeatherTwentyOne.Services;
 using Windows.Graphics;
+using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -15,7 +17,7 @@ namespace chatgpt.WinUI;
 /// </summary>
 public partial class App : MauiWinUIApplication
 {
-    private bool isShow = true;
+	private  bool openFlag = true;
 	/// <summary>
 	/// Initializes the singleton application object.  This is the first line of authored code
 	/// executed, and as such is the logical equivalent of main() or WinMain().
@@ -26,16 +28,39 @@ public partial class App : MauiWinUIApplication
 	}
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    static Mutex? __SingleMutex;
 
-
-	protected override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
 	{
-		base.OnLaunched(args);
-		WeatherTwentyOne.WindowExtensions.Hwnd = ((MauiWinUIWindow)chatgpt.App.Current.Windows[0].Handler.PlatformView).WindowHandle;
-		SetupTrayIcon();
-	}
+        if (!IsSingleInstance())
+        {
+            //Process.GetCurrentProcess().Kill();
+            Environment.Exit(0);
+            return;
+        }
 
-	private void SetupTrayIcon()
+        base.OnLaunched(args);
+        SetupTrayIcon();
+	}
+    static bool IsSingleInstance()
+    {
+        const string applicationId = "813342EB-7796-4B13-98F1-14C99E778C6E";
+        __SingleMutex = new Mutex(false, applicationId);
+        GC.KeepAlive(__SingleMutex);
+
+        try
+        {
+            return __SingleMutex.WaitOne(0, false);
+        }
+        catch (Exception)
+        {
+            __SingleMutex.ReleaseMutex();
+            return __SingleMutex.WaitOne(0, false);
+        }
+
+    }
+
+    private void SetupTrayIcon()
 	{
 		var trayService = WeatherTwentyOne.ServiceProvider.GetService<ITrayService>();
 
@@ -50,19 +75,26 @@ public partial class App : MauiWinUIApplication
 
 			trayService.ClickHandler = () =>
             {
-                if (isShow)
+				
+                if (!openFlag)
                 {
-                    isShow = false;
-                    WeatherTwentyOne.WindowExtensions.BringToFront();
-                    var nativeWindowHandle = ((MauiWinUIWindow) chatgpt.App.Current.Windows[0].Handler.PlatformView).WindowHandle;
-                    WindowId win32WindowsId = Win32Interop.GetWindowIdFromWindow(nativeWindowHandle);
-                    AppWindow winuiAppWindow = AppWindow.GetFromWindowId(win32WindowsId);
-                    winuiAppWindow.Show(true);
+                    if (!WeatherTwentyOne.WindowExtensions.Visible)
+                    {
+                        WeatherTwentyOne.WindowExtensions.Show();
+                        openFlag = false;
+                        WeatherTwentyOne.WindowExtensions.Visible = true;
+                    }
+                    else
+                    {
+                        openFlag = true;
+                        WeatherTwentyOne.WindowExtensions.Hide();
+                    }
                 }
                 else
                 {
-                    isShow = true;
-                    ((MauiWinUIWindow)chatgpt.App.Current.Windows[0].Handler.PlatformView).Close();
+                    openFlag = false;
+                    WeatherTwentyOne.WindowExtensions.Show();
+                    WeatherTwentyOne.WindowExtensions.Visible = true;
                 }
                 
 

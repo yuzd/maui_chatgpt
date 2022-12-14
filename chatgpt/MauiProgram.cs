@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Maui.Platform;
 using PInvoke;
+using Windows.UI.WindowManagement;
+using AppWindow = Microsoft.UI.Windowing.AppWindow;
 #if WINDOWS
 using WeatherTwentyOne.Services;
 using WeatherTwentyOne.WinUI;
@@ -70,14 +72,28 @@ public static class MauiProgram
                             {
                                 window.GetAppWindow()?.Hide();
                             } ;
-
-							windows.OnLaunched((a1, args) =>
+						
+                            windows.OnLaunched((a1, args) =>
 							{
 
-                                const int width = 700;
-                                const int height = 800;
-                                winuiAppWindow.MoveAndResize(new RectInt32(1920 / 2 - width / 2, 1080 / 2 - height / 2, width, height));
-                                //window.GetAppWindow().Hide();
+                                WeatherTwentyOne.WindowExtensions.Hwnd = nativeWindowHandle;
+                                WeatherTwentyOne.WindowExtensions.Show = () =>
+                                {
+                                    WeatherTwentyOne.WindowExtensions.BringToFront();
+                                    var displyArea = Microsoft.UI.Windowing.DisplayArea.Primary;
+                                    var scalingFactor = ((MauiWinUIWindow)chatgpt.App.Current.Windows[0].Handler.PlatformView).GetDisplayDensity();
+                                    var width = 500* scalingFactor;
+                                    var height = 700 * scalingFactor;
+                                    var startX = displyArea.WorkArea.Width - width;
+                                    var startY = displyArea.WorkArea.Height - height;
+                                    winuiAppWindow.MoveAndResize(new ((int)startX, (int)startY, (int)width, (int)height), displyArea);
+                                    winuiAppWindow.Show();
+                                };
+                                WeatherTwentyOne.WindowExtensions.Hide = () =>
+                                {
+                                    winuiAppWindow.Hide();
+                                };
+
                             });
 
 							windows.OnClosed((window, args) =>
@@ -86,15 +102,13 @@ public static class MauiProgram
 								if (!trayService.isDispose)
 								{
 									args.Handled = true;
-									window.GetAppWindow().Hide();
+                                    WeatherTwentyOne.WindowExtensions.Hide();
 								}
-
 							});
 
 						});
 					}
-
-					winuiAppWindow.MoveAndResize(new RectInt32(0, 0, 0, 0));
+					winuiAppWindow.Hide();
 				});
 			});
 		});

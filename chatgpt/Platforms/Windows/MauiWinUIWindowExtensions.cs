@@ -8,6 +8,11 @@ public static class WindowExtensions
 {
     public static IntPtr Hwnd { get; set; }
 
+    public static Action Show { get; set; }
+    public static Action Hide { get; set; }
+
+    public static bool Visible { get; set; }
+
     public static void SetIcon(string iconFilename)
     {
         if (Hwnd == IntPtr.Zero)

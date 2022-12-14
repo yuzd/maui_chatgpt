@@ -228,7 +228,7 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
 			// Get the mouse cursor position
 			WinApi.GetCursorPos(out var pt);
 
-            PInvoke.User32.SetForegroundWindow(WeatherTwentyOne.WindowExtensions.Hwnd);
+           PInvoke.User32.SetForegroundWindow(WeatherTwentyOne.WindowExtensions.Hwnd);
 
             // Now display the context menu and block until we get a result
             uint commandId = WinApi.TrackPopupMenuEx(
@@ -310,14 +310,27 @@ namespace Hardcodet.Wpf.TaskbarNotification.Interop
                 case WindowsMessages.WM_ACTIVATEAPP:
                     break;
                 case WindowsMessages.WM_MOUSEMOVE:
+                    WeatherTwentyOne.WindowExtensions.Visible =
+                        PInvoke.User32.IsWindowVisible(WeatherTwentyOne.WindowExtensions.Hwnd);
+
+                    Debug.WriteLine("WM_MOUSEMOVE===》" + WeatherTwentyOne.WindowExtensions.Visible);
                     MouseEventReceived?.Invoke(MouseEvent.MouseMove);
                     break;
 
                 case WindowsMessages.WM_LBUTTONDOWN:
+                    WeatherTwentyOne.WindowExtensions.Visible =
+                        PInvoke.User32.IsWindowVisible(WeatherTwentyOne.WindowExtensions.Hwnd);
+
+                    Debug.WriteLine("WM_LBUTTONDOWN===》" + WeatherTwentyOne.WindowExtensions.Visible);
                     MouseEventReceived?.Invoke(MouseEvent.IconLeftMouseDown);
                     break;
 
                 case WindowsMessages.WM_LBUTTONUP:
+                    WeatherTwentyOne.WindowExtensions.Visible =
+                        PInvoke.User32.IsWindowVisible(WeatherTwentyOne.WindowExtensions.Hwnd);
+
+                    Debug.WriteLine("WM_LBUTTONUP===》" + WeatherTwentyOne.WindowExtensions.Visible);
+
                     if (!isDoubleClick)
                     {
                         MouseEventReceived?.Invoke(MouseEvent.IconLeftMouseUp);
