@@ -1,16 +1,12 @@
-﻿using Microsoft.UI.Windowing;
-using Microsoft.UI;
+﻿#nullable enable
+using chatgpt.Services;
 using Microsoft.UI.Xaml;
-using WinRT.Interop;
-using WeatherTwentyOne.Services;
-using Windows.Graphics;
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
+using ServiceProvider = chatgpt.Services.ServiceProvider;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
-namespace chatgpt.WinUI;
+namespace chatgpt.Platforms.Windows;
 
 /// <summary>
 /// Provides application-specific behavior to supplement the default Application class.
@@ -57,19 +53,18 @@ public partial class App : MauiWinUIApplication
             __SingleMutex.ReleaseMutex();
             return __SingleMutex.WaitOne(0, false);
         }
-
     }
 
     private void SetupTrayIcon()
 	{
-		var trayService = WeatherTwentyOne.ServiceProvider.GetService<ITrayService>();
+		var trayService = ServiceProvider.GetService<ITrayService>();
 
 		if (trayService != null)
 		{
 			trayService.Initialize();
 			trayService.ExistHandler = () => {
 
-				((MauiWinUIWindow)chatgpt.App.Current.Windows[0].Handler.PlatformView).Close();
+                WindowExtensions.Close();
 			};
 
 
@@ -78,23 +73,23 @@ public partial class App : MauiWinUIApplication
 				
                 if (!openFlag)
                 {
-                    if (!WeatherTwentyOne.WindowExtensions.Visible)
+                    if (!WindowExtensions.Visible)
                     {
-                        WeatherTwentyOne.WindowExtensions.Show();
+                        WindowExtensions.Show();
                         openFlag = false;
-                        WeatherTwentyOne.WindowExtensions.Visible = true;
+                        WindowExtensions.Visible = true;
                     }
                     else
                     {
                         openFlag = true;
-                        WeatherTwentyOne.WindowExtensions.Hide();
+                        WindowExtensions.Hide();
                     }
                 }
                 else
                 {
                     openFlag = false;
-                    WeatherTwentyOne.WindowExtensions.Show();
-                    WeatherTwentyOne.WindowExtensions.Visible = true;
+                    WindowExtensions.Show();
+                    WindowExtensions.Visible = true;
                 }
                 
 

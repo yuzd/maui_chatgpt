@@ -1,4 +1,4 @@
-﻿namespace WeatherTwentyOne;
+﻿namespace chatgpt.Services;
 
 public static class ServiceProvider
 {

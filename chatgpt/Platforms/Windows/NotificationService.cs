@@ -1,7 +1,7 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
-using WeatherTwentyOne.Services;
+﻿using chatgpt.Services;
+using Microsoft.Toolkit.Uwp.Notifications;
 
-namespace WeatherTwentyOne.WinUI;
+namespace chatgpt.Platforms.Windows;
 
 public class NotificationService : INotificationService
 {

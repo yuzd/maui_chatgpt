@@ -1,4 +1,4 @@
-﻿namespace WeatherTwentyOne.Services;
+﻿namespace chatgpt.Services;
 
 public interface INotificationService
 {

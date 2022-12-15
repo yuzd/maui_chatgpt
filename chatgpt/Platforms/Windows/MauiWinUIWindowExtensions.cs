@@ -1,14 +1,11 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.UI.Xaml;
-using WinRT;
-
-namespace WeatherTwentyOne;
+﻿namespace chatgpt.Platforms.Windows;
 
 public static class WindowExtensions
 {
     public static IntPtr Hwnd { get; set; }
 
     public static Action Show { get; set; }
+    public static Action Close { get; set; }
     public static Action Hide { get; set; }
 
     public static bool Visible { get; set; }

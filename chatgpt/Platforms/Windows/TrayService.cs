@@ -1,9 +1,7 @@
-﻿using chatgpt;
-using Hardcodet.Wpf.TaskbarNotification.Interop;
-using Microsoft.UI.Xaml;
-using WeatherTwentyOne.Services;
+﻿using chatgpt.Platforms.Windows.NativeWindowing;
+using chatgpt.Services;
 
-namespace WeatherTwentyOne.WinUI;
+namespace chatgpt.Platforms.Windows;
 
 public class TrayService : ITrayService
 {
@@ -23,7 +21,7 @@ public class TrayService : ITrayService
 
 		tray.ContextMenuStrip.Items.Add(new ContextMenuStrip.MenuItem { 
             Icon = Resource.trayicon,
-            Text = "Exit",
+            Text = "退出",
 			Command = new Command(() => {
 				tray.dispose();
 				dispose = true;
@@ -31,7 +29,16 @@ public class TrayService : ITrayService
 			})
 		});
 
-		tray.LeftClick = () => {
+        tray.ContextMenuStrip.Items.Add(new ContextMenuStrip.MenuItem
+        {
+            Icon = Resource.trayicon,
+            Text = "打开",
+            Command = new Command(() => {
+                ClickHandler?.Invoke();
+            })
+        });
+
+        tray.LeftClick = () => {
             ClickHandler?.Invoke();
         };
     }
