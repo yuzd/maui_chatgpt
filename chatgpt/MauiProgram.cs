@@ -59,7 +59,7 @@ public static class MauiProgram
                         p.IsResizable = false;
                         p.IsMaximizable = false;
                         p.IsMinimizable = false;
-
+                        p.SetBorderAndTitleBar(false, false);
 
                         //disable the close button action when clicked - close button still visible, but does not close the app
                         events.AddWindows(windows =>
