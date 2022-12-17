@@ -55,11 +55,11 @@ namespace chatgpt.Services.JSBridge
             if (!string.IsNullOrEmpty(ErrMessage))
             {
                 var err = Convert.ToBase64String(Encoding.UTF8.GetBytes("err:"+ ErrMessage));
-                return webView.EvaluateJavaScriptAsync($"localStorage.setItem('{_reqesut.Key.Replace("request_csharp_", "response_csharp_")}','{err}')");
+                return webView.EvaluateJavaScriptAsync($"dotnet_response_csharp_set('{_reqesut.Key.Replace("request_csharp_", "response_csharp_")}','{err}')");
             }
             string jsonString = typeof(T) == typeof(string) ? Data.ToString() : JsonSerializer.Serialize(Data);
             var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonString));
-            return webView.EvaluateJavaScriptAsync($"localStorage.setItem('{_reqesut.Key.Replace("request_csharp_", "response_csharp_")}','{base64String}')");
+            return webView.EvaluateJavaScriptAsync($"dotnet_response_csharp_set('{_reqesut.Key.Replace("request_csharp_", "response_csharp_")}','{base64String}')");
         }
     }
 }

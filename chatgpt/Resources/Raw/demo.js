@@ -20,7 +20,6 @@ class CsharpMethod {
         let that = this;
         var promise = new Promise(function (resolve, reject) {
             var eventHandler = function (e) {
-                debugger;
                 window.removeEventListener(eventKey, eventHandler);
                 let resp = e.newValue;
                 if (resp) {

@@ -10,20 +10,13 @@ namespace chatgpt.Services.JSBridge
     internal static class WebViewExtentions
     {
         private const string LocalStorageProxy = @"
-const signSetItem = localStorage.setItem
-localStorage.setItem = function (key, val) {
-    if (key.indexOf('response_csharp_') !== 0) {
-        // 非csharp调用的直接return
-        signSetItem.apply(this, arguments);
-        return;
-    }
+const dotnet_response_csharp_set = function (key, val) {
     // 发送消息
     let event = new Event(key)
     event.key = key
     event.newValue = val
     window.dispatchEvent(event)
 }
-console.log('localStorage.setItem proxy success')
 ";
 
         public static void AddJsCallProxy(this WebView webview)
