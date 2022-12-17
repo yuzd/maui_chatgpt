@@ -74,6 +74,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
 	</ItemGroup>
   <ItemGroup>
+    <None Remove="Resources\Raw\demo.js" />
+    <None Remove="Resources\Raw\index.html" />
     <None Remove="Resources\Raw\trayicon.ico" />
   </ItemGroup>
 	<ItemGroup>
@@ -86,7 +88,6 @@
     <PackageReference Include="PInvoke.User32" Version="0.7.104" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NotifyIcon" Version="1.1.0" />
     <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
