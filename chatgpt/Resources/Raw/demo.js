@@ -12,6 +12,7 @@ class CsharpMethod {
         this.data = { command: command, data: !data ? '' : JSON.stringify(data), key: this.dataId }
     }
 
+    // 调用csharp 返回promise
     call() {
         // 把data存储到localstorage中 目的是让csharp端获取参数
         localStorage.setItem(this.dataId, this.utf8_to_b64(JSON.stringify(this.data)));
