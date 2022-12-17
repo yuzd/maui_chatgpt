@@ -41,7 +41,7 @@ public partial class MainPage : ContentPage
                             // 拿到请求具体的内容
                             var requestData = requesut.GetOrParseRequest<string>();
                             var responseData = requesut.GetOrCreateResponse<string>();
-                            await Task.Delay(5000);
+                            await Task.Delay(Random.Shared.Next(1000,3000));
                             responseData.Data = requestData + "——改造" + DateTime.Now.ToString("HH:mm:ss");
                             await responseData.WriteToWebViewAsync(MyWebView);
                             break;

@@ -16,7 +16,7 @@
     <script>
 
         function callCs() {
-            const testMethod = new CsharpMethod("test", { name: "yuzd" });
+            const testMethod = new CsharpMethod("test", { name: "yuzd", time: new Date().getTime() });
             testMethod.call()
                 .then(function (data) {
                     alert(data);
