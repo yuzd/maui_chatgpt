@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="/demo.js"></script>
+</head>
+<body>
+
+    <h1>Maui SPA</h1>
+    <br />
+    <p>
+        <button onclick="callCs()">Call C#</button>
+    </p>
+    <script>
+
+        function callCs() {
+            const testMethod = new CsharpMethod("test", { name: "yuzd正东", time: new Date().getTime() });
+            testMethod.call()
+                .then(function (data) {
+                    alert(data);
+                }).catch(function (err) {
+                    alert(err);
+                });
+        }
+    </script>
+</body>
+</html>

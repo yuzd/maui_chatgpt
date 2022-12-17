@@ -1,14 +1,11 @@
 ﻿
 using chatgpt.Services.JSBridge;
-using System.Diagnostics;
-using System.Text.Json;
-using System.Xml.Linq;
+using chatgpt.Services.ChatGpt;
 
 namespace chatgpt;
 
 public partial class MainPage : ContentPage
 {
-
 
 
     public MainPage()
@@ -37,13 +34,48 @@ public partial class MainPage : ContentPage
                     var requesut = await MyWebView.GetJsCallRequestAsync(dataId);
                     switch (requesut.Command)
                     {
-                        case "test":
-                            // 拿到请求具体的内容
-                            var requestData = requesut.GetOrParseRequest<string>();
-                            var responseData = requesut.GetOrCreateResponse<string>();
-                            await Task.Delay(Random.Shared.Next(1000,3000));
-                            responseData.Data = requestData + "——改造" + DateTime.Now.ToString("HH:mm:ss");
-                            await responseData.WriteToWebViewAsync(MyWebView);
+                        case "chat":
+                            if (ChatService.Setting != null)
+                            {
+                                try
+                                {
+                                    var requestData2 = requesut.GetOrParseRequest<ChatRequest>();
+                                    var reply = await ChatService.GetResponseDataAsync(requestData2.Msg);
+                                    var responseData2 = requesut.GetOrCreateResponse<string>();
+                                    var choices = reply.Choices;
+                                    var Text = choices?.FirstOrDefault()?.Text.Trim();
+                                    responseData2.Data = Text;
+                                    await responseData2.WriteToWebViewAsync(MyWebView);
+                                }
+                                catch (Exception exception)
+                                {
+                                    var responseData3 = requesut.GetOrCreateResponse<string>();
+                                    responseData3.Data = exception.Message;
+                                    await responseData3.WriteToWebViewAsync(MyWebView);
+                                }
+                            }
+                            else
+                            {
+                                var responseData3 = requesut.GetOrCreateResponse<string>();
+                                responseData3.Data = "chatgpt初始化失败";
+                                await responseData3.WriteToWebViewAsync(MyWebView);
+                            }
+                            break;
+                        case "chatinit":
+                            try
+                            {
+                                var requestData3 = requesut.GetOrParseRequest<Setting>();
+                                ChatService.Setting = requestData3;
+                                var responseData3 = requesut.GetOrCreateResponse<string>();
+                                responseData3.Data = "chatgpt初始化成功";
+                                await responseData3.WriteToWebViewAsync(MyWebView);
+                            }
+                            catch (Exception exception)
+                            {
+                                var responseData3 = requesut.GetOrCreateResponse<string>();
+                                responseData3.Data = exception.Message;
+                                await responseData3.WriteToWebViewAsync(MyWebView);
+                            }
                             break;
                     }
                 }

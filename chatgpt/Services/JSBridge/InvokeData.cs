@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace chatgpt.Services.JSBridge
 {
@@ -23,7 +22,10 @@ namespace chatgpt.Services.JSBridge
 
         public T GetOrParseRequest<T>()
         {
-            parsedObj ??= typeof(T) == typeof(string) ? Data : JsonSerializer.Deserialize<T>(Data);
+            parsedObj ??= typeof(T) == typeof(string) ? Data : JsonSerializer.Deserialize<T>(Data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
             return (T)parsedObj;
         }
 
